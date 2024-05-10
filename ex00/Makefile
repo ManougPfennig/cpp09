@@ -1,5 +1,5 @@
 NAME = btc
-SRCS = main.cpp BitcoinExchange.cpp
+SRCS = main.cpp BitcoinExchange.cpp Date.cpp
 FLAGS = -std=c++98 -pedantic -Wall -Wextra -Werror
 OBJS = ${SRCS:.cpp=.o}
 
