@@ -159,11 +159,11 @@ bool	BitcoinExchange::inputLineIsUsable( const std::string line ) const{
 void	BitcoinExchange::setUserEntry( void ){
 
 	std::string input = ".";
-	while (input != "y" && input != "n" && input.length())
+	while (input != "y" && input != "n" && feof(stdin) == 0)
 	{
 		std::cout << YELLOW << "Do you wish to set missing entries manually ? (y/n) :\n" << RESET;
 		input.clear();
-		std::cin >> input;
+		std::getline(std::cin, input);
 	}
 	if (input == "y")
 	{
@@ -179,13 +179,13 @@ void	BitcoinExchange::setUserEntry( void ){
 double	BitcoinExchange::askUserEntry( const std::string date ){
 
 	std::string input = ".";
-	while (!isFloatFormat(input) && input.length())
+	while (!isFloatFormat(input) && feof(stdin) == 0)
 	{
 		std::cout << YELLOW << "Enter a new rate for " << CYAN << date << YELLOW << ": " << CYAN;
 		input.clear();
-		std::cin >> input;
+		std::getline(std::cin, input);
 	}
-	if (!input.length())
+	if (feof(stdin) != 0)
 	{
 		std::cout << YELLOW << "Closed stdin: Missing entries set to default" << RESET << std::endl;
 		_askUserEntry = false;
@@ -232,7 +232,7 @@ void	BitcoinExchange::convertInputList( const std::string inputFile ){
 		file.close();
 	}
 	else
-		throw(BitcoinExchange::CsvFileErrorException());
+		throw(BitcoinExchange::InputFileErrorException());
 	return ;
 }
 

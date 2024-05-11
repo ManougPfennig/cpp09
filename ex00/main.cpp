@@ -8,7 +8,7 @@ int	main(int ac, char **av)
 	try
 	{
 		be.readDataCSV("data.csv");
-		be.convertInputList("input.txt");
+		be.convertInputList("input");
 	}
 	catch (const std::exception &e){std::cout << "Error: " << e.what() << std::endl;}
 	return (0);

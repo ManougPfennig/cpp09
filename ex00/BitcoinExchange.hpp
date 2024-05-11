@@ -126,6 +126,13 @@ class BitcoinExchange {
 			return ("Cannot open CSV file in working directory");
 		}
 	};
+	class InputFileErrorException : public std::exception
+	{
+		const char *what() const throw()
+		{
+			return ("Cannot open Input file in working directory");
+		}
+	};
 	class ImpossibleDateException : public std::exception
 	{
 		const char *what() const throw()
