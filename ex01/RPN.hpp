@@ -37,6 +37,16 @@ class	RPN {
 		// -> Copies _pile's content from r.
 		RPN &operator=( const RPN &r );
 
+		// -> Returns a reference to private variable _pile.
+		std::stack<std::string> &getPile( void );
+
+		// -> Reverse the order of elements in pile
+		static void				reverse( std::stack<std::string> &pile );
+
+		// -> Concatenate all elements in _pile to a string
+		// (Each elements will be separated by a space)
+		std::string			pileToStr( void ) const;
+
 		// -> Checks if the character is an operator :
 		// - Returns 1 for [+]
 		// - Returns 2 for [-]
@@ -58,11 +68,10 @@ class	RPN {
 		// - Returns false if no error was found.
 		bool				getExpressionError( const std::string exp );
 
-		// -> Reads the whole expression and store each elements in _pile
+		// -> Reads the whole expression and store each elements in pile
 		// in the same order as in the expression.
-		// - Will throw an exception if the expression cannot be calculated.
-		// - Will empty _pile before storing any new element.
-		void				storeExpression( const std::string exp );
+		// - Will empty pile before storing any new element.
+		static void			storeExpression( const std::string exp, std::stack<std::string> &pile );
 
 		// -> Operate X by Y using the given sign
 		// - X and Y must be convertible to floating point value.

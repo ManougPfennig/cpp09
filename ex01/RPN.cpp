@@ -11,6 +11,42 @@ RPN	&RPN::operator=( const RPN &r ) {
 	return (*this);
 }
 
+std::stack<std::string> &RPN::getPile( void ){
+
+	return (_pile);
+}
+
+void		RPN::reverse( std::stack<std::string> &pile ){
+
+	// Copies pile.
+	std::stack<std::string> cpy = pile;
+	// Empties pile.
+	while (pile.size() != 0)
+		pile.pop();
+	// Recopies all elements in the reverse order.
+	while (cpy.size())
+	{
+		pile.push(cpy.top());
+		cpy.pop();
+	}
+	return ;
+}
+
+std::string	RPN::pileToStr( void ) const{
+
+	std::string				ret;
+	std::stack<std::string> cpy = _pile;
+
+	while (cpy.size())
+	{
+		ret = cpy.top() + ret;
+		cpy.pop();
+		if (cpy.size())
+			ret = " " + ret;
+	}
+	return (ret);
+}
+
 int			RPN::isOperator( const int op ){
 
 	int i = 0;
@@ -126,17 +162,16 @@ bool		RPN::getExpressionError( const std::string exp ){
 	return (false);
 }
 
-void		RPN::storeExpression( const std::string exp ){
+void		RPN::storeExpression( const std::string exp, std::stack<std::string> &pile ){
 
-	getExpressionError(exp);
 	// Empties _pile before storing new elements.
-	while(_pile.empty() == false)
-		_pile.pop();
-	// Find elements and store them in reverse order for easier calculation.
+	while(pile.empty() == false)
+		pile.pop();
+	// Find elements and store them in reverse order for easier RPN calculation.
 	for (int i = exp.length() - 1; i >= 0; i--)
 	{
 		if (exp[i] != ' ')
-			_pile.push(exp.substr(i, 1));
+			pile.push(exp.substr(i, 1));
 	}
 	return ;
 }
@@ -207,8 +242,6 @@ std::string	RPN::lDoubletoStr( long double ld ){
 	return (result);
 }
 
-
-
 std::string	RPN::getInfixInput( void ){
 
 	std::string	input;
@@ -217,7 +250,7 @@ std::string	RPN::getInfixInput( void ){
 		std::cout << YELLOW << "Enter infix expression: " << RESET;
 		input.clear();
 		std::getline(std::cin, input);
-		// Checks if stdin has been closed using ctrl+D
+		// Checks if stdin has been closed and returns empty input (error)
 		if (feof(stdin) != 0)
 		{
 			std::cout << RED << "Closed stdin: Exiting" << RESET << std::endl;
@@ -225,7 +258,7 @@ std::string	RPN::getInfixInput( void ){
 		}
 		// Doesn't check entry if it is empty
 		if (input.length() == 0)
-			continue ;
+			continue;
 		// Checks if the entry is a valid input
 		if (!RPN::isValidInfix(input))
 			std::cout << YELLOW << "Unvalid entry." << RESET << std::endl;
@@ -235,11 +268,123 @@ std::string	RPN::getInfixInput( void ){
 	return (input);
 }
 
+// Function to get the precedence of an operator
+int	getPrecedence(char op) {
+
+	if (op == '+' || op == '-')
+		return (1);
+	if (op == '*' || op == '/')
+		return (2);
+	return (0);
+}
+
+// void		RPN::shuntingYard( void ){
+
+// 	// Get user entry for converting
+// 	std::string input = getInfixInput();
+// 	// Checks for stdin error
+// 	if (!input.length())
+// 		return ;
+// 	// Operators temporary pile
+// 	std::stack<std::string> opeStack;
+// 	// Primary expression pile
+// 	std::stack<std::string> inStack;
+// 	// Result expression pile
+// 	RPN						outStack;
+
+// 	// Transform the entry string to elements in a pile
+// 	RPN::storeExpression(input, inStack);
+
+// 	// Repeats sorting until two elements are left in the pile
+// 	while (inStack.size() > 2)
+// 	{
+// 		if (isdigit(inStack.top()[0]))
+// 		{
+// 			// Put all operands elements in outStack
+// 			outStack.getPile().push(inStack.top());
+// 			inStack.pop();
+// 		}
+// 		else if (isOperator(inStack.top()[0]))
+// 		{
+// 			// Put all operator elements in opeStack
+// 			opeStack.push(inStack.top());
+// 			inStack.pop();
+// 		}
+// 	}
+// 	// Moves all operators form their pile to the outStack
+// 	while (opeStack.size())
+// 	{
+// 		outStack.getPile().push(opeStack.top());
+// 		opeStack.pop();
+// 	}
+// 	// Moves the last operator the operator pile
+// 	opeStack.push(inStack.top());
+// 	inStack.pop();
+// 	// Moves the last operand to the outStack
+// 	outStack.getPile().push(inStack.top());
+// 	inStack.pop();
+// 	// Moves the last operator from the operator pile to outStack
+// 	outStack.getPile().push(opeStack.top());
+// 	opeStack.pop();
+// 	std::cout << BLUE << "Converted expression: " << WHITE << outStack.pileToStr() << std::endl;
+// 	// Reverse elements order so they can be used in calculateRPN()
+// 	RPN::reverse(outStack.getPile());
+// 	std::cout << GREEN << "Result: " << WHITE << outStack.calculateRPN() << RESET << std::endl;
+// 	return ;
+// }
+
 void		RPN::shuntingYard( void ){
 
-	std::string input = RPN::getInfixInput();
-	
+	// Get user entry for converting
+	std::string input = getInfixInput();
+	// Checks for stdin error
+	if (!input.length())
+		return ;
+	// Operators temporary pile
+	std::stack<std::string> opeStack;
+	// Primary expression pile
+	std::stack<std::string> inStack;
+	// Result expression pile
+	RPN						outStack;
+
+	// Transform the entry string to elements in a pile
+	RPN::storeExpression(input, inStack);
+
+	// Shunting-Yard algorithm
+	while (inStack.size())
+	{
+		if (isdigit(inStack.top()[0]))
+		{
+			// Pop operands to outStack
+			outStack.getPile().push(inStack.top());
+			inStack.pop();
+		}
+		else if (isOperator(inStack.top()[0]))
+		{
+			// Store operators on opeStack and pop them to inStack depending on their precedence
+			while (!opeStack.empty() && getPrecedence(opeStack.top()[0]) >= getPrecedence(inStack.top()[0]))
+			{
+				outStack.getPile().push(opeStack.top());
+				opeStack.pop();
+			}
+			opeStack.push(inStack.top());
+			inStack.pop();
+		}
+	}
+
+	// Pop remaining operators from stack to postfix
+	while (!opeStack.empty()) 
+	{
+		outStack.getPile().push(opeStack.top());
+		opeStack.pop();
+	}
+	std::cout << BLUE << "Converted expression: " << WHITE << outStack.pileToStr() << std::endl;
+	// Reverse elements order so they can be used in calculateRPN()
+	RPN::reverse(outStack.getPile());
+	std::cout << GREEN << "Result: " << WHITE << outStack.calculateRPN() << RESET << std::endl;
+	return ;
 }
+
 
 int			RPN::isValidInfix( const std::string exp ){
 

@@ -39,7 +39,7 @@ void	displayMenu( void ){
 
 int main(int ac, char **av)
 {
-	system("clear");
+	// system("clear");
 	if (ac == 2)
 	{
 		std::string	entry(av[1]);
@@ -53,7 +53,7 @@ int main(int ac, char **av)
 			{
 				RPN a;
 				a.getExpressionError(av[1]);
-				a.storeExpression(av[1]);
+				RPN::storeExpression(av[1], a.getPile());
 				std::cout << GREEN << "Result: " << WHITE << a.calculateRPN() << RESET << std::endl;
 			}
 			catch(const std::exception& e) {std::cout << RED << "Error: " << WHITE << e.what() << RESET << std::endl;}
