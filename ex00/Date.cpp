@@ -10,7 +10,7 @@ Date::Date( void ){
     _year = timeinfo->tm_year + 1900;
 	_month = timeinfo->tm_mon + 1;
 	_day = timeinfo->tm_mday;
-    
+
 	return ;
 }
 
