@@ -2,12 +2,12 @@
 
 PmergeMe::~PmergeMe( void ) {}
 PmergeMe::PmergeMe( void ) {}
-PmergeMe::PmergeMe( const PmergeMe &p ): _vector(p._vector), _list(p._list) {}
+PmergeMe::PmergeMe( const PmergeMe &p ): _vector(p._vector), _deque(p._deque) {}
 
 PmergeMe &PmergeMe::operator=( const PmergeMe &p ) {
 
 	this->_vector = p._vector;
-	this->_list = p._list;
+	this->_deque = p._deque;
 	return (*this);
 }
 
@@ -52,9 +52,9 @@ void	PmergeMe::readInput( const std::string exp ) {
 		// looks for values too big
 		if (val > INT_MAX)
 			throw (PmergeMe::ValueTooHighException());
-		// adds the new value to _vector and _list
+		// adds the new value to _vector and _deque
 		_vector.push_back((int)val);
-		_list.push_back((int)val);
+		_deque.push_back((int)val);
 		// skips to the end of the number
 		while(exp[i] && exp[i] != ' ')
 			i++;
@@ -67,14 +67,14 @@ std::vector<int>	&PmergeMe::getVector( void ) {
 	return (_vector);
 }
 
-std::list<int>	&PmergeMe::getList( void ) {
+std::deque<int>	&PmergeMe::getDeque( void ) {
 
-	return (_list);
+	return (_deque);
 }
 
-bool	PmergeMe::isListSorted( const std::list<int> &list ) {
+bool	PmergeMe::isListSorted( const std::deque<int> &list ) {
 
-	std::list<int>::const_iterator it = list.begin();
+	std::deque<int>::const_iterator it = list.begin();
 	int	i = 0;
 	int y = *it;
 	while (it != list.end())
@@ -143,11 +143,60 @@ std::vector<int>	PmergeMe::mergeSortVector( std::vector<int> vec ) {
     return (mergeVector(sortedLeft, sortedRight));
 }
 
-void	PmergeMe::FordJohnsonVector( t_pmm *timer) {
+std::vector<int>::const_iterator	PmergeMe::binarySearchVector( std::vector<int> &hayStack, int val, int low, int high ) const{
+
+	std::vector<int>::const_iterator it = hayStack.begin();
+
+	// If the search range is lower than one, returns the iterator to the found location.
+	if (high <= low)
+	{
+		if (val > *(it + low))
+			return (it + (low + 1));
+		else
+			return (it + low);
+	}
+
+	int mid = (low + high) / 2;
+
+	// If the value is in the middle of the range, returns the iterator to the found location.
+	if (val == *(it + mid))
+		return (it + mid);
+
+	// If the value is higher than the middle of the range, look inside the higher half.
+	// Else, look inside the lower half
+	if (val > *(it + mid))
+		return (binarySearchVector(hayStack, val, mid + 1, high));
+	else
+		return (binarySearchVector(hayStack, val, low, mid - 1));
+}
+
+std::vector<int>	PmergeMe::insertionSortVector( std::vector<int> toFill, std::vector<int> input) const{
+
+	int selected;
+	std::vector<int>::const_iterator loc;
+	int low, high;
+	while (!input.empty())
+	{
+		selected = input.back();
+
+		low = 0;
+		high = toFill.size() - 1;
+
+		// find location where selected should be inserted
+		loc = binarySearchVector(toFill, selected, low, high);
+
+		// Insert the value in the found location
+		toFill.insert(loc, selected);
+		input.pop_back();
+	}
+	return (toFill);
+}
+
+void	PmergeMe::FordJohnsonVector( t_pmm *info) {
 
 	// Saves starting time if a timer is passed as parameter
-	if (timer)
-		timer->chronoStart = std::chrono::system_clock::now();
+	if (info)
+		info->start = std::chrono::high_resolution_clock::now();
 
 	std::vector<int>					vMin;
 	std::vector<int>					vMax;
@@ -192,8 +241,15 @@ void	PmergeMe::FordJohnsonVector( t_pmm *timer) {
 	// The values of vMax are the sorted recursively using the Merge-Sort algorithm
 	vMax = mergeSortVector(vMax);
 
-	// The remaining values of VMin are the inserted in vMax using Binary-Search algorithm
-	
+	// The remaining values of VMin are the inserted in vMax using Insertion-Sort (Binary-Search) algorithm
+	_vector = insertionSortVector(vMax, vMin);
+
+	// Saves ending time if a timer is passed as parameter
+	if (info)
+	{
+		info->end = std::chrono::high_resolution_clock::now();
+		info->duration = info->end - info->start;
+	}
 	return ;
 }
 

@@ -14,7 +14,7 @@ comparison sorts when it comes to reducing the number of comparisons." << std::e
 	std::cout << "Start " << GREEN << "./PmergeMe" << WHITE << " with a string representation of a list of positive integers, \
 ranging from " << CYAN << "0" << WHITE << " to " << CYAN << "2147483647" << WHITE << "." << std::endl;
 	std::cout << "The list will be sorted using the " << GREEN << "The Ford-Johnson Algorithm" << WHITE << " using two different \
-types of containers.\nIn this case, " << CYAN << "vector" << WHITE << " and " << CYAN << "list" << WHITE << " are used. \
+types of containers.\nIn this case, " << CYAN << "vector" << WHITE << " and " << CYAN << "deque" << WHITE << " are used. \
 The execution time will be dsplayed alongside both sorted list." << std::endl;
 
 	// PENSER A AJOUTER UNE DEFINITION POUR MERGE-SORT ET INSERT-SORT
@@ -30,17 +30,18 @@ int main(int ac, char **av)
 	{
 		try
 		{
-			t_pmm vectorTimer;
-			t_pmm listTimer;
+			t_pmm vecInfo;
+			t_pmm deqInfo;
 			// Convert and store the values passed as parameter
 			ouga.readInput(av[1]);
 			// Checks if the list is already sorted
-			if (PmergeMe::isListSorted(ouga.getList()))
+			if (PmergeMe::isListSorted(ouga.getDeque()))
 			{
 				std::cout << YELLOW << "List is already sorted" << RESET << std::endl;
 				return (0);
 			}
-			ouga.FordJohnsonVector(&vectorTimer);
+			ouga.FordJohnsonVector(&vecInfo);
+			std::cout << "execution time: " << vecInfo.duration.count() << std::endl;
 			// ouga.FordJohnsonList(&listTimer);
 		}
 		catch (const std::exception &e)

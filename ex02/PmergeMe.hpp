@@ -11,7 +11,7 @@
 # define WHITE   "\033[37m"
 
 # include <iostream>
-# include <list>
+# include <deque>
 # include <vector>
 # include <chrono>
 # include <exception>
@@ -20,10 +20,9 @@
 // -> Structure used to facilitate the storing of a time duration
 typedef struct	s_pmm
 {
-	std::chrono::system_clock::time_point	chronoStart;
-	std::chrono::system_clock::duration		chronoDuration;
-	long									duration;
-	std::string								containerUsed;
+	std::chrono::high_resolution_clock::time_point				start;
+	std::chrono::high_resolution_clock::time_point				end;
+	std::chrono::duration<double, std::micro>	duration;
 }				t_pmm;
 
 
@@ -31,7 +30,7 @@ class PmergeMe {
 
 	private:
 		std::vector<int>	_vector;
-		std::list<int>		_list;
+		std::deque<int>		_deque;
 
 	public:
 		~PmergeMe( void );
@@ -41,7 +40,7 @@ class PmergeMe {
 
 	// -> Takes a string representation of a list of positive integers
 	// Valid input: [0 ; INT_MAX]
-	// - Will store a copy of all inputs in _vector and _list respectively.
+	// - Will store a copy of all inputs in _vector and _deque respectively.
 	// - Will throw an error message in case of invalid input
 	void				readInput( const std::string exp );
 
@@ -50,30 +49,35 @@ class PmergeMe {
 	// - Container type will be stored in the t_pmm struct
 	void				FordJohnsonVector( t_pmm *timer );
 
-	// -> Will sort all values inside _list using the Ford-Johnson algorithm
+	// -> Will sort all values inside _deque using the Ford-Johnson algorithm
 	// - Duration time will be stored in the timer struct if non-null
 	// - Container type will be stored in the t_pmm struct
-	void				FordJohnsonList( t_pmm *timer );
+	void				FordJohnsonDeque( t_pmm *timer );
 
-	// -> Checks if a std::list of int is sorted
+	// -> Checks if a std::deque of int is sorted
 	// - Returns true if sorted or empty
 	// - Returns false otherwise
-	static bool			isListSorted( const std::list<int> &lst );
+	static bool			isListSorted( const std::deque<int> &lst );
 
 	// Merges and sort two vectors in a new one and returns it
 	std::vector<int>	mergeVector( std::vector<int> left, std::vector<int> right);
-
 	// -> Sorts the vector recursively using the Merge-Sort algorithm
 	std::vector<int>	mergeSortVector( std::vector<int> vec );
+	// -> Inserts elements from input and uses binary search to insert it in toFill
+	// - Returns the new vector
+	std::vector<int>	insertionSortVector( std::vector<int> toFill, std::vector<int> input) const;
+	// -> Finds the correct placement for the value inside the vector
+	// - Returns a const_iterator on that placement
+	std::vector<int>::const_iterator	binarySearchVector( std::vector<int> &hayStack, int val, int start, int end ) const;
 
-	// -> Sorts the list recursively using the Merge-Sort algorithm
-	void				mergeSortList( std::list<int> lst );
+	// -> Sorts the deque recursively using the Merge-Sort algorithm
+	void				mergeSortdeque( std::deque<int> deq );
 
 	// -> Returns a reference to private container _vector
 	std::vector<int>	&getVector( void );
 
-	// -> Returns a reference to private container _list
-	std::list<int>		&getList( void );
+	// -> Returns a reference to private container _deque
+	std::deque<int>		&getDeque( void );
 
 	class UnvalidCharacterException: public std::exception
 	{
