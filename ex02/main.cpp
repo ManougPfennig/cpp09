@@ -23,26 +23,30 @@ The execution time will be dsplayed alongside both sorted list." << std::endl;
 
 int main(int ac, char **av)
 {
-	PmergeMe	ouga;
+	PmergeMe	pmm;
 
 //	system("clear");
 	if (ac == 2)
 	{
 		try
 		{
-			t_pmm vecInfo;
-			t_pmm deqInfo;
+			t_timer vecInfo;
+			t_timer deqInfo;
 			// Convert and store the values passed as parameter
-			ouga.readInput(av[1]);
+			pmm.readInput(av[1]);
 			// Checks if the list is already sorted
-			if (PmergeMe::isListSorted(ouga.getDeque()))
+			if (PmergeMe::isListSorted(pmm.getDeque()))
 			{
 				std::cout << YELLOW << "List is already sorted" << RESET << std::endl;
 				return (0);
 			}
-			ouga.FordJohnsonVector(&vecInfo);
-			std::cout << "execution time: " << vecInfo.duration.count() << std::endl;
-			// ouga.FordJohnsonList(&listTimer);
+			std::cout << "before: " << pmm.vectorToStr() << std::endl;
+			pmm.FordJohnsonVector(&vecInfo);
+			pmm.FordJohnsonDeque(&deqInfo);
+			std::cout << "after: " << pmm.vectorToStr() << std::endl;
+			std::cout << "Time to process a range of " << pmm.getVector().size() << " elements with std::vector : " << vecInfo.duration.count() << " us" << std::endl;
+			std::cout << "Time to process a range of " << pmm.getDeque().size() << " elements with std::deque : " << deqInfo.duration.count() << " us" << std::endl;
+			// pmm.FordJohnsonList(&listTimer);
 		}
 		catch (const std::exception &e)
 		{
