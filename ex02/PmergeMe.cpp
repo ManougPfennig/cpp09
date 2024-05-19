@@ -13,20 +13,19 @@ PmergeMe &PmergeMe::operator=( const PmergeMe &p ) {
 
 
 
-
-std::string			PmergeMe::vectorToStr( void ) const {
+std::string	PmergeMe::vectorToOs( void ) const {
 
 	std::vector<int>::const_iterator	it = _vector.begin();
-	std::string							ret;
+	std::ostringstream						os;
 
 	while (it != _vector.end())
 	{
-		ret += std::to_string(*it);
+		os << CYAN << std::to_string(*it);
 		it++;
 		if (it != _vector.end())
-			ret += " ";
+			os << YELLOW << ", ";
 	}
-	return (ret);
+	return (os.str());
 }
 
 void	PmergeMe::readInput( const std::string exp ) {
@@ -277,7 +276,6 @@ void	PmergeMe::FordJohnsonVector( t_timer *info ) {
 
 
 
-
 std::deque<int>	PmergeMe::mergeDeque( std::deque<int> left, std::deque<int> right ) {
 
 	std::deque<int> result;
@@ -445,5 +443,31 @@ void	PmergeMe::FordJohnsonDeque( t_timer *info ) {
 
 
 
+int	PmergeMe::A001768( int n ) {
 
+	int		sum = 0;
+	int		ceiling_value = 0;
+	double	value = 0;
+
+	if (n >= 0)
+	{
+		for (int k = 1; k <= n; ++k)
+		{
+			value = (3.0 * k) / 4.0;
+			ceiling_value = std::ceil(std::log2(value));
+			sum += ceiling_value;
+		}
+		return (sum);
+	}
+
+	// If n is negative, setting n to _vector's and _deque's size.
+	n = _vector.size();
+	for (int k = 1; k <= n; ++k)
+	{
+		value = (3.0 * k) / 4.0;
+		ceiling_value = std::ceil(std::log2(value));
+		sum += ceiling_value;
+	}
+	return (sum);
+}
 

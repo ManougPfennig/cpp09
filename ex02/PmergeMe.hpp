@@ -17,6 +17,8 @@
 # include <exception>
 # include <climits>
 # include <stdlib.h>
+# include <sstream>
+# include <cmath>
 
 // -> Structure used to facilitate the storing of a time duration
 typedef struct	s_timer
@@ -41,7 +43,7 @@ class PmergeMe {
 
 	// -> Returns a string representation of all elements in _vector
 	// - Elements will be separated by a single space, [2;4;7] becomes "2 4 7"
-	std::string			vectorToStr( void ) const;
+	std::string		vectorToOs( void ) const;
 	// -> Takes a string representation of a list of positive integers
 	// Valid input: [0 ; INT_MAX]
 	// - Will store a copy of all inputs in _vector and _deque respectively.
@@ -84,6 +86,11 @@ class PmergeMe {
 	// - Returns a const_iterator on that placement
 	std::deque<int>::const_iterator	binarySearchDeque( std::deque<int> &hayStack, int val, int start, int end ) const;
 
+	// -> Returns the worst case number of comparaisons done to sort a list of n size using the Ford-Johnson algorithm.
+	// - Any negative value will set n to _vector's and _deque's size by default.
+	// - Formula by David W. Wilson.
+	// - see https://oeis.org/A001768 for more info.
+	int	A001768( int n );
 
 	// -> Returns a reference to private container _vector
 	std::vector<int>	&getVector( void );
