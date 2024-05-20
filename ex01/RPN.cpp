@@ -47,10 +47,10 @@ std::string	RPN::pileToStr( void ) const{
 	return (ret);
 }
 
-int			RPN::isOperator( const int op ){
+int			RPN::isOperator( const std::string op ){
 
 	int i = 0;
-	int	_operator[4] = {'+', '-', '/', '*'};
+	std::string	_operator[4] = {std::string("+"), std::string("-"), std::string("/"), std::string("*")};
 	while (i < 4 && op != _operator[i])
 		i++;
 	switch (i)
@@ -96,7 +96,7 @@ bool		RPN::isValidExpression( const std::string exp ){
 		// Checks if there are only operands or operators and count them
 		if (isdigit(exp[i]) && ++operands)
 			last = OPERAND;
-		else if (isOperator(exp[i]) && ++operators)
+		else if (isOperator(exp.substr(i, 1)) && ++operators)
 			last = OPERATOR;
 		else
 			return (false);
@@ -138,7 +138,7 @@ bool		RPN::getExpressionError( const std::string exp ){
 		// Checks if there are only operands or operators and count them
 		if (isdigit(exp[i]) && ++operands)
 			last = OPERAND;
-		else if (isOperator(exp[i]) && ++operators)
+		else if (isOperator(exp.substr(i, 1)) && ++operators)
 			last = OPERATOR;
 		else
 			throw (RPN::UnvalidCharacterException());
@@ -179,7 +179,7 @@ void		RPN::storeExpression( const std::string exp, std::stack<std::string> &pile
 long double	RPN::operate( const std::string x, const std::string y, const std::string sign) const{
 
 	// Checks if sign is a valid expression.
-	if (sign.length() != 1 || !RPN::isOperator(sign[0]))
+	if (sign.length() != 1 || !RPN::isOperator(sign.substr(0, 1)))
 		throw (RPN::OperateErrorException());
 
 	// Convert each values to long double for precision.
@@ -187,7 +187,7 @@ long double	RPN::operate( const std::string x, const std::string y, const std::s
 	long double	db_y = atof(y.c_str());
 
 	// Finds the operator type and returns the result.
-	switch (RPN::isOperator(sign[0]))
+	switch (RPN::isOperator(sign.substr(0, 1)))
 	{
 		case 1:
 			return (db_x + db_y);
@@ -212,14 +212,16 @@ long double	RPN::calculateRPN( void ){
 	std::string				x;
 	std::string				y;
 	std::string				sign;
+
 	// Will keep operating as long as the pile has expressions.
 	while(_pile.size() != 1)
 	{
-		while (!isOperator(_pile.top()[0]))
+		while (!isOperator(_pile.top()))
 		{
 			tmp.push(_pile.top());
 			_pile.pop();
 		}
+
 		// Store the sign and the X and Y value for operating
 		sign = _pile.top();
 		_pile.pop();
@@ -278,60 +280,6 @@ int	getPrecedence(char op) {
 	return (0);
 }
 
-// void		RPN::shuntingYard( void ){
-
-// 	// Get user entry for converting
-// 	std::string input = getInfixInput();
-// 	// Checks for stdin error
-// 	if (!input.length())
-// 		return ;
-// 	// Operators temporary pile
-// 	std::stack<std::string> opeStack;
-// 	// Primary expression pile
-// 	std::stack<std::string> inStack;
-// 	// Result expression pile
-// 	RPN						outStack;
-
-// 	// Transform the entry string to elements in a pile
-// 	RPN::storeExpression(input, inStack);
-
-// 	// Repeats sorting until two elements are left in the pile
-// 	while (inStack.size() > 2)
-// 	{
-// 		if (isdigit(inStack.top()[0]))
-// 		{
-// 			// Put all operands elements in outStack
-// 			outStack.getPile().push(inStack.top());
-// 			inStack.pop();
-// 		}
-// 		else if (isOperator(inStack.top()[0]))
-// 		{
-// 			// Put all operator elements in opeStack
-// 			opeStack.push(inStack.top());
-// 			inStack.pop();
-// 		}
-// 	}
-// 	// Moves all operators form their pile to the outStack
-// 	while (opeStack.size())
-// 	{
-// 		outStack.getPile().push(opeStack.top());
-// 		opeStack.pop();
-// 	}
-// 	// Moves the last operator the operator pile
-// 	opeStack.push(inStack.top());
-// 	inStack.pop();
-// 	// Moves the last operand to the outStack
-// 	outStack.getPile().push(inStack.top());
-// 	inStack.pop();
-// 	// Moves the last operator from the operator pile to outStack
-// 	outStack.getPile().push(opeStack.top());
-// 	opeStack.pop();
-// 	std::cout << BLUE << "Converted expression: " << WHITE << outStack.pileToStr() << std::endl;
-// 	// Reverse elements order so they can be used in calculateRPN()
-// 	RPN::reverse(outStack.getPile());
-// 	std::cout << GREEN << "Result: " << WHITE << outStack.calculateRPN() << RESET << std::endl;
-// 	return ;
-// }
 
 void		RPN::shuntingYard( void ){
 
@@ -359,7 +307,7 @@ void		RPN::shuntingYard( void ){
 			outStack.getPile().push(inStack.top());
 			inStack.pop();
 		}
-		else if (isOperator(inStack.top()[0]))
+		else if (isOperator(inStack.top().substr(0, 1)))
 		{
 			// Store operators on opeStack and pop them to inStack depending on their precedence
 			while (!opeStack.empty() && getPrecedence(opeStack.top()[0]) >= getPrecedence(inStack.top()[0]))
@@ -407,13 +355,13 @@ int			RPN::isValidInfix( const std::string exp ){
 		{
 			if (isdigit(exp[i]) && last == OPERAND)
 				return (false);
-			if (isOperator(exp[i]) && last == OPERATOR)
+			if (isOperator(exp.substr(i, 1)) && last == OPERATOR)
 				return (false);
 		}
 		// Checks if there are only operands or operators
 		if (isdigit(exp[i]))
 			last = OPERAND;
-		else if (isOperator(exp[i]))
+		else if (isOperator(exp.substr(i, 1)))
 			last = OPERATOR;
 		else
 			return (false);

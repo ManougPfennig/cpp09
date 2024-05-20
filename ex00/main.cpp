@@ -4,7 +4,7 @@ int	main(int ac, char **av)
 {
 	BitcoinExchange be;
 
-	// std::cout << std::fixed << std::setprecision(2) << "StockRate: " << lol << std::endl;
+	// system("clear");
 	if (ac == 2)
 	{
 		try

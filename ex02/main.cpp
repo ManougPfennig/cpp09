@@ -33,15 +33,29 @@ void	displayMenu( void ){
 	return ;
 }
 
+std::string	mergeInputs(char **av)
+{
+	std::string	ret;
+
+	for (int i = 1; av[i]; i++)
+	{
+		std::string tmp(av[i]);
+		ret += tmp;
+		if (av[i + 1])
+			ret += " ";
+	}
+	return (ret);
+}
+
 int main(int ac, char **av)
 {
 	PmergeMe	pmm;
 
 //	system("clear");
-	if (ac == 2)
+	if (ac > 1)
 	{
 		std::string	entry(av[1]);
-		if (entry == "tutorial")
+		if (ac == 2 && entry == "tutorial")
 			displayTutorial();
 		else
 		{
@@ -50,7 +64,7 @@ int main(int ac, char **av)
 				t_timer vecInfo;
 				t_timer deqInfo;
 				// Convert and store the values passed as parameter
-				pmm.readInput(av[1]);
+				pmm.readInput(mergeInputs(av));
 				// Checks if the list is already sorted
 				if (PmergeMe::isListSorted(pmm.getDeque()))
 				{
@@ -74,7 +88,5 @@ int main(int ac, char **av)
 	}
 	else if (ac == 1)
 		displayMenu();
-	else
-		std::cout << YELLOW << "Start " << GREEN << "./PmergeMe" << YELLOW << " with only one argument." << std::endl;
 	return (0);
 }

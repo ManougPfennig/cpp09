@@ -53,7 +53,7 @@ class	RPN {
 		// - Returns 3 for [/]
 		// - Returns 4 for [*]
 		// + Returns 0 otherwise.
-		static int			isOperator( const int op );
+		static int			isOperator( const std::string op );
 
 		// Exemple: "8 9 + 4 *"
 		//-> Reads the whole expression to check for errors such as:

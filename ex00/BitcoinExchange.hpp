@@ -11,7 +11,6 @@
 # include <cstdlib>
 # include <exception>
 # include <map>
-# include <vector>
 # include "Date.hpp"
 
 
@@ -30,7 +29,6 @@ class BitcoinExchange {
 	private:
 		// Map of all CSV entries, by Date and Rate
 		std::map<Date, double>		_csv;
-		std::vector<std::string>	_output;
 		// User variable will alsways be set to false when constructing
 		bool					_askUserEntry;
 
